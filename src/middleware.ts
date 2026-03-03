@@ -32,9 +32,17 @@ export async function middleware(request: NextRequest) {
 
   // IMPORTANT: always call getUser() — it refreshes the session token if
   // needed. Do NOT remove this call or the session will go stale.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Wrapped in try/catch: if Supabase returns an empty or malformed response
+  // (paused project, network hiccup, cold start), we treat the user as
+  // unauthenticated rather than crashing the middleware and returning a
+  // broken RSC payload that shows "Unexpected end of JSON input" in the browser.
+  let user = null;
+  try {
+    const { data } = await supabase.auth.getUser();
+    user = data.user;
+  } catch {
+    // Supabase unreachable — fail open (unauthenticated) so the app stays usable
+  }
 
   const { pathname } = request.nextUrl;
 
