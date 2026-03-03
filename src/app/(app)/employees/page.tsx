@@ -3,6 +3,20 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import type { Profile } from "@/lib/types";
 
+const AVATAR_GRADIENTS = [
+  "from-pink-400 to-indigo-400",
+  "from-indigo-400 to-sky-400",
+  "from-sky-400 to-pink-400",
+  "from-pink-400 to-sky-400",
+  "from-indigo-400 to-pink-400",
+];
+
+function avatarGradient(name: string | null): string {
+  if (!name) return "from-indigo-400 to-pink-400";
+  const n = name.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
+  return AVATAR_GRADIENTS[n % AVATAR_GRADIENTS.length];
+}
+
 export default async function EmployeesPage({
   searchParams,
 }: {
@@ -46,7 +60,7 @@ export default async function EmployeesPage({
         </div>
         <Link
           href="/employees/new"
-          className="flex items-center gap-2 px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white text-sm font-medium rounded-lg transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-indigo-400 to-pink-400 hover:from-indigo-300 hover:to-pink-300 text-white text-sm font-medium rounded-lg transition-all"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -103,8 +117,8 @@ export default async function EmployeesPage({
                   <tr key={emp.id} className="hover:bg-zinc-800/40 transition-colors group">
                     <td className="px-4 py-3">
                       <Link href={`/employees/${emp.id}`} className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-zinc-700 flex items-center justify-center shrink-0">
-                          <span className="text-xs font-medium text-zinc-300">{initials}</span>
+                        <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${avatarGradient(emp.full_name)} flex items-center justify-center shrink-0`}>
+                          <span className="text-xs font-medium text-white">{initials}</span>
                         </div>
                         <div>
                           <p className="font-medium text-white group-hover:text-brand-400 transition-colors">
@@ -159,8 +173,8 @@ function Th({ children }: { children: React.ReactNode }) {
 
 function StatusBadge({ status }: { status: string }) {
   return status === "active" ? (
-    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-400">
-      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-brand-400">
+      <span className="w-1.5 h-1.5 rounded-full bg-brand-400" />
       Active
     </span>
   ) : (

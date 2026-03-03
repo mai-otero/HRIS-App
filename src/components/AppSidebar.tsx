@@ -60,6 +60,20 @@ function PTOIcon() {
   );
 }
 
+const AVATAR_GRADIENTS = [
+  "from-pink-400 to-indigo-400",
+  "from-indigo-400 to-sky-400",
+  "from-sky-400 to-pink-400",
+  "from-pink-400 to-sky-400",
+  "from-indigo-400 to-pink-400",
+];
+
+function avatarGradient(name: string | null): string {
+  if (!name) return "from-indigo-400 to-pink-400";
+  const n = name.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
+  return AVATAR_GRADIENTS[n % AVATAR_GRADIENTS.length];
+}
+
 export default function AppSidebar({ profile, signOutAction }: Props) {
   const pathname = usePathname();
   const isAdmin = profile.role === "admin";
@@ -85,11 +99,18 @@ export default function AppSidebar({ profile, signOutAction }: Props) {
     <aside className="w-56 shrink-0 flex flex-col bg-zinc-900 border-r border-white/[0.06] h-full">
 
       {/* Brand */}
-      <div className="px-4 h-14 flex items-center gap-2.5 border-b border-white/[0.06]">
-        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center select-none shrink-0">
-          <span className="text-white font-bold text-xs leading-none">S</span>
+      <div className="py-3 px-4 flex items-center gap-2.5 border-b border-white/[0.06]">
+        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-pink-400 via-indigo-400 to-sky-400 flex items-center justify-center select-none shrink-0">
+          <span className="text-white font-bold text-[11px] leading-none tracking-wide">SS</span>
         </div>
-        <span className="font-semibold text-white text-sm tracking-tight truncate">Supersonio</span>
+        <div className="flex flex-col min-w-0">
+          <span className="font-semibold text-sm leading-tight tracking-tight truncate bg-gradient-to-r from-pink-400 via-indigo-400 to-sky-400 bg-clip-text text-transparent">
+            Supersonio
+          </span>
+          <span className="text-[9px] font-semibold text-zinc-600 uppercase tracking-widest leading-tight">
+            People Ops
+          </span>
+        </div>
       </div>
 
       {/* Nav */}
@@ -99,11 +120,11 @@ export default function AppSidebar({ profile, signOutAction }: Props) {
             key={item.href}
             href={item.href}
             className={`
-              flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-sm font-medium
+              flex items-center gap-2.5 py-2 rounded-lg text-sm font-medium
               transition-colors duration-100
               ${isActive(item.href)
-                ? "bg-zinc-800 text-white"
-                : "text-zinc-400 hover:text-white hover:bg-zinc-800/60"
+                ? "bg-brand-400/[0.12] text-brand-400 border-l-[3px] border-brand-400 pl-[0.5rem] pr-2.5"
+                : "px-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800/60"
               }
             `}
           >
@@ -116,8 +137,8 @@ export default function AppSidebar({ profile, signOutAction }: Props) {
       {/* User footer */}
       <div className="px-3 py-4 border-t border-white/[0.06]">
         <div className="flex items-center gap-2.5 px-2 mb-3">
-          <div className="w-7 h-7 rounded-full bg-zinc-700 flex items-center justify-center shrink-0">
-            <span className="text-xs font-medium text-zinc-300">{initials}</span>
+          <div className={`w-7 h-7 rounded-full bg-gradient-to-br ${avatarGradient(profile.full_name)} flex items-center justify-center shrink-0`}>
+            <span className="text-xs font-medium text-white">{initials}</span>
           </div>
           <div className="min-w-0">
             <p className="text-sm font-medium text-white truncate leading-tight">

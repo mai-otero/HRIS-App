@@ -17,7 +17,7 @@ function fmtDate(d: string) {
 function StatusBadge({ status }: { status: PtoRequest["status"] }) {
   if (status === "confirmed") {
     return (
-      <span className="inline-flex items-center text-xs px-2 py-0.5 rounded-md bg-emerald-950/60 text-emerald-400 ring-1 ring-emerald-900/40">
+      <span className="inline-flex items-center text-xs px-2 py-0.5 rounded-md bg-brand-400/[0.12] text-brand-400 ring-1 ring-brand-400/30">
         Confirmed
       </span>
     );
@@ -133,7 +133,7 @@ export default async function AdminPtoPage({ searchParams }: Props) {
         </h1>
         <Link
           href="/pto/admin/request"
-          className="inline-flex items-center gap-2 h-9 px-4 rounded-lg bg-brand-600 hover:bg-brand-500 text-white text-sm font-medium transition-colors"
+          className="inline-flex items-center gap-2 h-9 px-4 rounded-lg bg-gradient-to-br from-indigo-400 to-pink-400 hover:from-indigo-300 hover:to-pink-300 text-white text-sm font-medium transition-all"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />

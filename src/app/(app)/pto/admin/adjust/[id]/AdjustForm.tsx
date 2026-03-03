@@ -93,7 +93,7 @@ export default function AdjustForm({ action, defaultYear }: Props) {
       <button
         type="submit"
         disabled={loading}
-        className="h-11 px-6 rounded-lg bg-brand-600 hover:bg-brand-500 text-white text-sm font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
+        className="h-11 px-6 rounded-lg bg-gradient-to-br from-indigo-400 to-pink-400 hover:from-indigo-300 hover:to-pink-300 text-white text-sm font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150"
       >
         {loading ? (
           <span className="flex items-center gap-2">

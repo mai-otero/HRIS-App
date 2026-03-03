@@ -129,6 +129,56 @@ export async function updateEmployee(
 }
 
 /**
+ * Permanently delete an employee — removes storage files, all child rows, and the auth user.
+ * Explicit deletes are required because pto_adjustments.admin_id and
+ * payroll_files.uploaded_by lack ON DELETE CASCADE and would block the auth user deletion.
+ * Irreversible; admin only.
+ */
+export async function deleteEmployee(id: string): Promise<{ error?: string }> {
+  await requireAdmin();
+
+  const admin = createAdminClient();
+
+  // 1. Fetch payroll storage paths then purge the files
+  const { data: payrollFiles } = await admin
+    .from("payroll_files")
+    .select("storage_path")
+    .eq("employee_id", id);
+
+  if (payrollFiles && payrollFiles.length > 0) {
+    const paths = payrollFiles.map((f: { storage_path: string }) => f.storage_path);
+    await admin.storage.from("payroll").remove(paths);
+  }
+
+  // 2. Also purge any payroll files this user uploaded for other employees
+  const { data: uploadedFiles } = await admin
+    .from("payroll_files")
+    .select("storage_path")
+    .eq("uploaded_by", id);
+
+  if (uploadedFiles && uploadedFiles.length > 0) {
+    const paths = uploadedFiles.map((f: { storage_path: string }) => f.storage_path);
+    await admin.storage.from("payroll").remove(paths);
+  }
+
+  // 3. Delete every row that references this profile in a non-cascading FK column:
+  //    pto_adjustments.admin_id and payroll_files.uploaded_by have no ON DELETE CASCADE
+  await admin.from("pto_adjustments").delete().eq("employee_id", id);
+  await admin.from("pto_adjustments").delete().eq("admin_id", id);
+  await admin.from("pto_requests").delete().eq("employee_id", id);
+  await admin.from("pto_balances").delete().eq("employee_id", id);
+  await admin.from("payroll_files").delete().eq("employee_id", id);
+  await admin.from("payroll_files").delete().eq("uploaded_by", id);
+  await admin.from("profiles").delete().eq("id", id);
+
+  // 4. Delete the auth user (all referencing rows are already gone)
+  const { error: deleteError } = await admin.auth.admin.deleteUser(id);
+  if (deleteError) return { error: deleteError.message };
+
+  redirect("/employees");
+}
+
+/**
  * Deactivate or reactivate an employee. `id` is bound at call-site.
  */
 export async function setEmployeeStatus(

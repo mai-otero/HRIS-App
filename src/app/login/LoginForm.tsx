@@ -40,13 +40,18 @@ export default function LoginForm({ authError, children }: Props) {
       <div className="w-full max-w-[420px]">
 
         {/* ── Wordmark ──────────────────────────────────────── */}
-        <div className="flex items-center justify-center gap-2.5 mb-9">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-sm select-none">
-            <span className="text-white font-bold text-sm leading-none">S</span>
+        <div className="flex items-center justify-center gap-3 mb-9">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-400 via-indigo-400 to-sky-400 flex items-center justify-center shadow-sm select-none shrink-0">
+            <span className="text-white font-bold text-[11px] leading-none tracking-wide">SS</span>
           </div>
-          <span className="text-[1.1rem] font-semibold text-white tracking-tight">
-            Supersonio
-          </span>
+          <div className="flex flex-col min-w-0">
+            <span className="font-semibold text-base leading-tight tracking-tight bg-gradient-to-r from-pink-400 via-indigo-400 to-sky-400 bg-clip-text text-transparent">
+              Supersonio
+            </span>
+            <span className="text-[9px] font-semibold text-zinc-600 uppercase tracking-widest leading-tight">
+              People Ops
+            </span>
+          </div>
         </div>
 
         {/* ── Card ──────────────────────────────────────────── */}
@@ -151,7 +156,7 @@ export default function LoginForm({ authError, children }: Props) {
                   disabled={status === "loading"}
                   className="
                     w-full h-11 rounded-lg
-                    bg-brand-600 hover:bg-brand-500
+                    bg-gradient-to-br from-indigo-400 to-pink-400 hover:from-indigo-300 hover:to-pink-300
                     text-white text-sm font-medium
                     shadow-sm
                     disabled:opacity-50 disabled:cursor-not-allowed

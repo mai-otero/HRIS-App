@@ -1,7 +1,8 @@
 import { requireAdmin } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import EmployeeForm from "@/components/EmployeeForm";
-import { updateEmployee } from "../../actions";
+import { updateEmployee, deleteEmployee } from "../../actions";
+import DeleteEmployeeButton from "../DeleteEmployeeButton";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import type { Profile, EmployeeFormData } from "@/lib/types";
@@ -51,6 +52,11 @@ export default async function EditEmployeePage({
     return updateEmployee(id, data);
   }
 
+  async function deleteAction(): Promise<{ error?: string }> {
+    "use server";
+    return deleteEmployee(id);
+  }
+
   return (
     <div className="p-8">
       {/* Breadcrumb */}
@@ -78,6 +84,19 @@ export default async function EditEmployeePage({
         cancelHref={`/employees/${id}`}
         submitLabel="Save changes"
       />
+
+      {/* Danger zone */}
+      <div className="max-w-3xl mt-10 pt-8 border-t border-white/[0.06]">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="text-sm font-medium text-zinc-400">Delete employee</p>
+            <p className="text-xs text-zinc-600 mt-0.5">
+              Permanently removes this profile, all PTO records, and all payroll files. Cannot be undone.
+            </p>
+          </div>
+          <DeleteEmployeeButton employeeName={profile.full_name} action={deleteAction} />
+        </div>
+      </div>
     </div>
   );
 }

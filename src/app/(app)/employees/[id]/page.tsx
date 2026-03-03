@@ -6,6 +6,20 @@ import Link from "next/link";
 import { setEmployeeStatus } from "../actions";
 import type { Profile } from "@/lib/types";
 
+const AVATAR_GRADIENTS = [
+  "from-pink-400 to-indigo-400",
+  "from-indigo-400 to-sky-400",
+  "from-sky-400 to-pink-400",
+  "from-pink-400 to-sky-400",
+  "from-indigo-400 to-pink-400",
+];
+
+function avatarGradient(name: string | null): string {
+  if (!name) return "from-indigo-400 to-pink-400";
+  const n = name.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
+  return AVATAR_GRADIENTS[n % AVATAR_GRADIENTS.length];
+}
+
 export default async function EmployeeProfilePage({
   params,
 }: {
@@ -41,7 +55,6 @@ export default async function EmployeeProfilePage({
     "use server";
     await setEmployeeStatus(id, "active");
   }
-
   return (
     <div className="p-8">
       {/* Breadcrumb (admin only) */}
@@ -56,8 +69,8 @@ export default async function EmployeeProfilePage({
       {/* Profile header */}
       <div className="flex items-start justify-between gap-4 mb-8">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-zinc-800 ring-1 ring-white/[0.08] flex items-center justify-center shrink-0">
-            <span className="text-lg font-semibold text-zinc-300">
+          <div className={`w-14 h-14 rounded-full bg-gradient-to-br ${avatarGradient(profile.full_name)} ring-1 ring-white/[0.08] flex items-center justify-center shrink-0`}>
+            <span className="text-lg font-semibold text-white">
               {profile.full_name
                 ? profile.full_name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()
                 : "?"}
@@ -176,8 +189,8 @@ function fmtContract(c: string | null) {
 
 function StatusBadge({ status }: { status: string }) {
   return status === "active" ? (
-    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-400">
-      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />Active
+    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-brand-400">
+      <span className="w-1.5 h-1.5 rounded-full bg-brand-400" />Active
     </span>
   ) : (
     <span className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500">
