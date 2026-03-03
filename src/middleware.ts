@@ -69,12 +69,15 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Match every route except Next.js internals, static files, and metadata
-  // routes that Next.js App Router generates (icon, apple-icon, manifest, etc.).
-  // Without these exclusions the middleware redirects unauthenticated requests
-  // for those assets to /login, returning HTML where the browser expects an
-  // image — which can corrupt the RSC stream and produce JSON parse errors.
+  // Exclude ALL /_next/* paths (static files, image optimizer, internal routes
+  // like /_next/undefined that webpack tries when a chunk isn't pre-cached),
+  // plus common static asset extensions and Next.js metadata routes.
+  // Previously, only _next/static and _next/image were excluded; that caused
+  // /_next/undefined (webpack's fallback URL when r.u=e=>{} returns undefined)
+  // to hit the middleware, get a 307 redirect to /login, and receive HTML
+  // instead of a JS chunk — which broke the webpack chunk-load promise and
+  // produced "Unexpected end of JSON input".
   matcher: [
-    "/((?!_next/static|_next/image|favicon\\.ico|icon(?:\\.[^/?]+)?|apple-icon(?:\\.[^/?]+)?|manifest(?:\\.[^/?]+)?|robots\\.txt|sitemap\\.xml|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|xml)$).*)",
+    "/((?!_next|favicon\\.ico|icon(?:\\.[^/?]+)?|apple-icon(?:\\.[^/?]+)?|manifest(?:\\.[^/?]+)?|robots\\.txt|sitemap\\.xml|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|xml)$).*)",
   ],
 };
