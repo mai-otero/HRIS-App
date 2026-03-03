@@ -10,25 +10,34 @@ import type { Profile } from "@/lib/types";
 /**
  * Returns the full profile row for the currently signed-in user,
  * or null if not authenticated or no profile row exists.
+ *
+ * Never throws — any Supabase/network failure returns null so callers
+ * can redirect to /login instead of crashing the RSC stream.
  */
 export async function getProfile(): Promise<Profile | null> {
-  const supabase = await createClient();
+  try {
+    const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  if (!user) return null;
+    if (!user) return null;
 
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single();
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", user.id)
+      .single();
 
-  if (error || !data) return null;
+    if (error || !data) return null;
 
-  return data as Profile;
+    return data as Profile;
+  } catch {
+    // Supabase unreachable, env vars missing, or network error —
+    // treat as unauthenticated so requireProfile() redirects to /login.
+    return null;
+  }
 }
 
 /**
