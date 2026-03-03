@@ -69,8 +69,12 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Match every route except Next.js internals and static files
+  // Match every route except Next.js internals, static files, and metadata
+  // routes that Next.js App Router generates (icon, apple-icon, manifest, etc.).
+  // Without these exclusions the middleware redirects unauthenticated requests
+  // for those assets to /login, returning HTML where the browser expects an
+  // image — which can corrupt the RSC stream and produce JSON parse errors.
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon\\.ico|icon(?:\\.[^/?]+)?|apple-icon(?:\\.[^/?]+)?|manifest(?:\\.[^/?]+)?|robots\\.txt|sitemap\\.xml|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|xml)$).*)",
   ],
 };
